@@ -7,6 +7,7 @@ A single Bash script that takes paired FASTQ files and a reference genome,
 aligns and deduplicates the reads, prepares the BAM with the quality tags
 LoFreq requires, and calls SNVs and indels.
 
+
 ## Usage
 
 Download and run `lofreq_pipeline.sh` in your directory.
@@ -19,19 +20,20 @@ chmod +x lofreq_pipeline.sh
 Example:
 
 ```bash
-./lofreq_pipeline.sh SRR12345678 ref/NC_000913.3.fasta \
+./lofreq_pipeline.sh SRR12345678 ref/reference.fasta \
     reads/SRR12345678_1.fastq.gz reads/SRR12345678_2.fastq.gz 8
 ```
 
-### Inputs
+### Input
 
 | Argument | Description |
 |---|---|
 | `<accession>` | Sample name. Used as the prefix for every output file. |
 | `<ref.fa>` | Reference genome FASTA. Indexed by the script with `bwa index`, so its directory must be writable. |
-| `<R1.fastq.gz>` | Forward reads. |
-| `<R2.fastq.gz>` | Reverse reads. |
+| `<R1.fastq.gz>` | Paired end Forward reads. |
+| `<R2.fastq.gz>` | Paired end Reverse reads. |
 | `<threads>` | Threads passed to `bwa mem`. |
+
 
 ### Working directory
 
@@ -39,17 +41,18 @@ The script writes **all output into the directory you run it from**, named
 `<accession>_*`. The reference index files (`.amb`, `.ann`, `.bwt`, `.pac`,
 `.sa`) are written next to the reference FASTA instead.
 
-Two things to consider:
+Two important considerations:
 
-- **Run one sample per directory.** Step 6 ends with `rm -f *.sam`, which
-  removes every SAM file in the working directory, not only this sample's.
-- **Don't run two samples against the same reference at the same time.** Each
+- Run one sample per directory.
+- Do not run two samples against the same reference at the same time. Each
   run calls `bwa index` on the reference, so concurrent runs overwrite the same
   index files while the other is reading them.
 
+
 ### Requirements
 
-`bwa`, `samtools`, `lofreq` and `bamtools` must be on `PATH`.
+Make sure `bwa`, `samtools`, `lofreq` and `bamtools` are on your `PATH` or
+installed in the conda environment.
 
 The script activates a Conda environment by absolute path:
 
@@ -58,20 +61,22 @@ source /home/user/miniconda3/etc/profile.d/conda.sh
 conda activate <env_name>
 ```
 
-**Edit these two lines** to point at your own Conda installation and
+Edit these two lines to point at your own Conda installation and
 environment, or delete them and activate the environment yourself before
 running.
 
+
 ## Workflow
 
-### 1. Alignment
+### Step 1. Alignment
 
 | Step | Command | Purpose |
 |---|---|---|
 | 1 | `bwa index` | Index the reference genome. |
 | 2 | `bwa mem` | Align the paired reads, producing a SAM file. |
 
-### 2. Post-processing
+
+### Step 2. Post-processing
 
 | Step | Command | Purpose |
 |---|---|---|
@@ -86,7 +91,8 @@ Duplicate removal is optional but recommended for Illumina paired-end data at
 roughly 50–200× depth. Duplicates are reads originating from a single DNA
 fragment; the equivalent tool in GATK is Picard `MarkDuplicates`.
 
-### 3. Variant calling
+
+### Step 3. Variant calling
 
 | Step | Command | Purpose |
 |---|---|---|
@@ -104,6 +110,7 @@ Two options are left commented out at step 14:
 
 - `--no-default-filter` — keep all calls and filter them yourself downstream.
 - `-a` — p-value threshold (default `0.01`, i.e. Q20).
+
 
 ## Outputs
 
@@ -123,6 +130,7 @@ All prefixed with `<accession>`:
 
 The intermediate SAM files are deleted at step 6. The intermediate BAMs are
 kept; delete them once you have the VCF if disk space matters.
+
 
 ## Note on read filtering
 
