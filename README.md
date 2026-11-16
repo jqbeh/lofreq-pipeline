@@ -9,6 +9,8 @@ LoFreq requires, and calls SNVs and indels.
 
 ## Usage
 
+Download and run `lofreq_pipeline.sh` in your directory.
+
 ```bash
 chmod +x lofreq_pipeline.sh
 ./lofreq_pipeline.sh <accession> <ref.fa> <R1.fastq.gz> <R2.fastq.gz> <threads>
