@@ -39,7 +39,7 @@ The script writes **all output into the directory you run it from**, named
 `<accession>_*`. The reference index files (`.amb`, `.ann`, `.bwt`, `.pac`,
 `.sa`) are written next to the reference FASTA instead.
 
-Two things follow from this:
+Two things to consider:
 
 - **Run one sample per directory.** Step 6 ends with `rm -f *.sam`, which
   removes every SAM file in the working directory, not only this sample's.
@@ -54,8 +54,8 @@ Two things follow from this:
 The script activates a Conda environment by absolute path:
 
 ```bash
-source /home/jbbeh/miniconda3/etc/profile.d/conda.sh
-conda activate everything
+source /home/user/miniconda3/etc/profile.d/conda.sh
+conda activate <env_name>
 ```
 
 **Edit these two lines** to point at your own Conda installation and
